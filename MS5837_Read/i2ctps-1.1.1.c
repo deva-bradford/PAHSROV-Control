@@ -17,7 +17,7 @@ int file_i2c, fd;
 char *filename = (char*)"/dev/i2c-1";
 int Reset = 0x1E; // reset address
 int PROMs[7] = {0xA0,0xA2,0xA4,0xA6,0xA8,0xAA,0xAC}; // calibration addresses
-int desired_values[7]={16385,33668,31548,19947,19751,27317,26370}; // desired calibration values for comparison
+uint16_t desired_values[7]={16385,33668,31548,19947,19751,27317,26370}; // desired calibration values for comparison
 uint8_t buffer_read[2]={0};
 uint8_t res;
 int length,i;
@@ -73,6 +73,39 @@ void ms5837_set_resolution(enum ms5837_resolution_osr res)
 return;
 }
 
+bool crc_check (uint16_t *n_prom, uint8_t crc) {
+	uint8_t cnt, n_bit;
+	uint16_t n_rem, crc_read;
+
+	int n = MS5837_COEFFICIENT_NUMBERS;
+
+	n_rem = 0x00;
+	crc_read = n_prom[0];
+	n_prom[n] = 0;
+	n_prom[0] = (0x0FFF & (n_prom[0]));    // Clear the CRC byte
+
+	for( cnt = 0 ; cnt < (n+1)*2 ; cnt++ ) {
+
+		// Get next byte
+		if (cnt%2 == 1)
+			n_rem ^=  n_prom[cnt>>1] & 0x00FF ;
+		else
+			n_rem ^=  n_prom[cnt>>1]>>8 ;
+
+		for( n_bit = 8; n_bit > 0 ; n_bit-- ) {
+
+			if( n_rem & 0x8000 )
+				n_rem = (n_rem << 1) ^ 0x3000;
+			else
+				n_rem <<= 1;
+		}
+	}
+	n_rem >>= 12;
+	n_prom[0] = crc_read;
+
+	return  ( n_rem == crc );
+}
+
 int main() {
 	//----- OPEN THE I2C BUS -----
 	fd = open(filename, O_RDWR );
@@ -95,7 +128,7 @@ int main() {
 	if(write(fd,&Reset,length)!=length)  //write reset address
         fprintf( stderr, "Failed to write to I2C device: %m\n" );
 
-	sleep(0.01); //reset delay 10 ms
+	sleep(.01); //reset delay 10 ms
 
 	// loop through each calibration value and compare with desired value
 
@@ -115,7 +148,9 @@ int main() {
 		//Print results
 		printf("Calibration Data for Address 0x%x: %d (desired = %d)\n",PROMs[i],data,desired_values[i]);
     }
-    //printf("pre-Checkpoint\n");
+	int z = MS5837_CRC_INDEX;
+	crc_check( eeprom_coeff, (eeprom_coeff[z] & 0xF000)>>12 );
+
 	while (1)
 		Temp_and_pressure_read();
 	return 0;
@@ -144,17 +179,19 @@ void Conversion_and_Read(uint8_t res, uint32_t *adc) {
 }
 
 void Temp_and_pressure_read() {
-	uint32_t temp, pres, D2, D1;
-	int32_t dT, TEMP;
-	int64_t OFF, SENS, P, T2, OFF2, SENS2;
-	float temperature, pressure;
-	uint32_t SENSi, OFFi, Ti;
+	uint32_t D2, D1;
+	uint32_t temp, pres;
+	int64_t dT, SENSi;
+	//int64_t T2;
+	double OFF, SENS, OFF2, SENS2;
+	float temperature, pressure, P, TEMP;
+	int64_t OFFi, Ti;
 	int density;
 
 	//Adresses
-	int adctempconvert = 0x50;
-	int adcpresconvert = 0x40;
-	density = 1029;
+	int adctempconvert = 0x5A;
+	int adcpresconvert = 0x4A;
+	density = 1029.0;
 
 
 	res = ms5837_resolution_osr*2;
@@ -167,31 +204,40 @@ void Temp_and_pressure_read() {
 
 	Conversion_and_Read(res, &pres);
 
-	printf("\rRaw Temp: %d\nRaw Pres: %d\n", temp, pres);
+	printf("Raw Temp: %d\nRaw Pres: %d\n", temp, pres);
 
 
 	D2 = temp;
 	D1 = pres;
 
-	dT=D2-(desired_values[5]*256);
-	SENS=desired_values[1]*32768+(desired_values[3]*dT)/256;
-	OFF=desired_values[2]*65536+(desired_values[4]*dT)/128;
-	P=(D1*SENS/2097152-OFF)/8192;
+	printf("D1: %d\nD2: %d\n", D1,D2);
 
+	dT=D2-(desired_values[5]*256.0);
+	SENS=desired_values[1]*32768.0+(desired_values[3]*dT)/256.0;
+	OFF=desired_values[2]*65536.0+(desired_values[4]*dT)/128.0;
+	P=(D1*SENS/2097152-OFF)/8192.0;
+	
+	printf("\nDt:%d\nSENS:%f\nOFF:%f\nP:%f\n",dT,SENS,OFF,P);
+	
+	
 	TEMP = 2000+(dT*desired_values[6])/8388608;
 	if ( (TEMP/100)<20)
 	{
+	  printf("\nFirst if Algo.Temp: %f\n", (TEMP/100));
 	  Ti = 3*dT*dT/8589934592.0;
 	  OFFi=(3*(TEMP-2000)*(TEMP-2000))/2;
 	  SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 	  if((TEMP/100)<-15)
 	  {
+		printf("\nSecond if Algo.Temp: %f\n", (TEMP/100));
 	    OFFi=OFFi+7*(TEMP+1500)*(TEMP+1500);
 	    SENSi=SENSi+(4*(TEMP+1500)*(TEMP+1500));
 	  }
 	}
 	else if((TEMP/100)>=20)
 	{
+	  	printf("\nThird if Algo.Temp: %f\n", (TEMP/100));
+
 	  Ti=(2*dT*dT)/137438953472.0;
 	   OFFi = ((TEMP-2000)*(TEMP-2000))/16;
 	   SENSi = 0;
@@ -199,11 +245,13 @@ void Temp_and_pressure_read() {
 	OFF2=OFF-OFFi;
 	SENS2=SENS-SENSi;
 	TEMP=TEMP-Ti;
-	P=(((D1*SENS2)/2097152-OFF2)/8192)/10.0;
+	P=(((D1*SENS2)/2097152.0-OFF2)/8192.0)/10.0;
 	TEMP = TEMP/100.0;
-
-	int depth = (P*100-101300)/(density*9.80665);
-	int alt = (1-pow(P/1013.25,.190284))*145366.45*.3048;
+    printf("P: %f\n", P);
+	double depth = (P*100-101300)/(density*9.80665);
+	//double alt = (1-pow(P/1013.25,.190284))*145366.45*.3048;
+	double alt = (1-pow(P/1013.25,.190284))*44307.69396;
+	P=P/10.0;//convert to kPa
 
 
 /*
@@ -246,5 +294,5 @@ Deprecated Secondary Algorithm
 	pressure = (float)P / 100;
 */
 
-	printf("\r\nTemp: %d\nPres: %d\n", TEMP, P);
+	printf("\nTemp: %f\nPres: %f\nDepth: %f\n Alt: %f\n", TEMP, P, depth, alt);
 }
