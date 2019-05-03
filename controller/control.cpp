@@ -32,6 +32,13 @@ double cubic (double n) {
 	return (n*n*n);
 }
 
+int doubleRot (int drive, int trig = 0) {
+	antidrive = (0 - drive)
+	if (trig) {
+		antidrive = 0.8 * trig;
+	}
+}
+
 int shifter(int ref, int x) { //negative x for other motor
 	int n;
 	if (ref > 0)
@@ -66,14 +73,15 @@ int main(int argc, char const *argv[])
     }
 
     Joystick* joy = new Joystick(argv[1]);
-	printf("Left joystick test on pin 0 initializing...");
+	printf("Initializing...");
     while (true)
     {
         usleep(1000);
         joy->Update();
 
 		coords = silmu(joy);
-		pwmWrite(PIN_BASE , converter(coords.LJY); //Setup if function to filter 1.5ms
+		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX));
+		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX)));
     }
 
     return 0;
