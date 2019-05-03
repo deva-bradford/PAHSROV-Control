@@ -21,12 +21,18 @@ using namespace std;
 int file_12c, fd;
 char *filename = (char*)"/dev/i2c-1";
 
+//g++ -o control joy.cpp updates.cpp test.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
+
 int calcTick(float impulseMs, int hertz) {
 	float cycleMs = 1000.0f / hertz;
 	return (int)(MAX_PWM * impulseMs / cycleMs + 4.0f);
 }
 
-int shifter(int ref, int x) {
+double cubic (double n) {
+	return (n*n*n);
+}
+
+int shifter(int ref, int x) { //negative x for other motor
 	int n;
 	if (ref > 0)
 		n = |x|;
@@ -36,7 +42,7 @@ int shifter(int ref, int x) {
 }
 
 int converter(int spec) {
-	return ((spec / 32000) * 102) + 311;
+	return (cubic((spec / 32767)) * 102) + 311;
 }
 
 int main(int argc, char const *argv[])
@@ -67,7 +73,7 @@ int main(int argc, char const *argv[])
         joy->Update();
 
 		coords = silmu(joy);
-		pwmWrite(PIN_BASE + 1, (((int) coords.LJY / 32000) * 102) + 311); //Setup if function to filter 1.5ms
+		pwmWrite(PIN_BASE , converter(coords.LJY); //Setup if function to filter 1.5ms
     }
 
     return 0;
