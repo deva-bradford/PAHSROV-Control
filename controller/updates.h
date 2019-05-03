@@ -5,7 +5,7 @@
 #include <climits>
 
 struct mapped {
-	int16_t BTA,BTB,BTX,BTY,BLB,BRB,BB,BS,BX,BLC,BRC,LJY,LJX,RJX,RJY,LT,RT;
+	int16_t BTA,BTB,BTX,BTY,BLB,BRB,BB,BS,BX,BLC,BRC,LJX,LJY,RJX,RJY,LT,RT;
 };
 
 
