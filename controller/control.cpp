@@ -26,6 +26,15 @@ int calcTick(float impulseMs, int hertz) {
 	return (int)(MAX_PWM * impulseMs / cycleMs + 4.0f);
 }
 
+int shifter(int ref, int x) {
+	int n;
+	if (ref > 0)
+		n = |x|;
+	if (ref < 0)
+		n = -|x|;
+	return n;
+}
+
 int converter(int spec) {
 	return ((spec / 32000) * 102) + 311;
 }
