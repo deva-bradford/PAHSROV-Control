@@ -7,7 +7,7 @@ LINK = g++
 CFLAGS = -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
 CXXFLAGS = $(CFLAGS)
 
-TARGET = test
+TARGET = control
 
 all: $(TARGET)
 
