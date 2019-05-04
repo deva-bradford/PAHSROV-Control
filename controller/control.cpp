@@ -2,6 +2,7 @@
 #include "updates.h"
 #include "pca9685.h"
 #include <iostream>
+#include <cstdlib>
 #include <wiringPi.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -35,6 +36,7 @@ int calcTick(float impulseMs, int hertz) {
 
 int xresolver(int trigstate, int joystate) {
 	int antijoystate;
+	dual pack;
 	if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //full forward
 		antijoystate = joystate = trigstate;
 	}
@@ -42,9 +44,10 @@ int xresolver(int trigstate, int joystate) {
 		antijoystate = 0.75 * joystate;
 	}
 	else { //doubleRot
-		antijoystate = (0 - joystate)
+		antijoystate = (0 - joystate);
 	}
-	return antijoystate, joystate;
+	pack = {antijoystate, joystate}
+	return pack;
 }
 
 int trigsolver(int ltrig, int rtrig) {
@@ -59,9 +62,9 @@ double cubic (double n) {
 int shifter(int ref, int x) { //negative x for other motor
 	int n;
 	if (ref > 0)
-		n = |x|;
+		n = abs(x);
 	if (ref < 0)
-		n = -|x|;
+		n = 0 - abs(x);
 	return n;
 }
 
@@ -98,11 +101,11 @@ int main(int argc, char const *argv[])
         joy->Update();
 
 		coords = silmu(joy);
-		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX));
-		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX)));
+		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX)));
+		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX))));
 		resolver = xresolver(trigsolver(coords.LT, coords.RT), coords.RJX);
-		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM);
-		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM);
+		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM));
+		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM));
     }
 
     return 0;
