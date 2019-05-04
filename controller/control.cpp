@@ -23,6 +23,11 @@ char *filename = (char*)"/dev/i2c-1";
 
 //g++ -o control joy.cpp updates.cpp test.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
 
+typedef dual = {
+	int LM;
+	int RM;
+};
+
 int calcTick(float impulseMs, int hertz) {
 	float cycleMs = 1000.0f / hertz;
 	return (int)(MAX_PWM * impulseMs / cycleMs + 4.0f);
@@ -35,8 +40,9 @@ double cubic (double n) {
 int doubleRot (int drive, int trig = 0) {
 	antidrive = (0 - drive)
 	if (trig) {
-		antidrive = 0.8 * trig;
+		antidrive = 0.75 * drive;
 	}
+	return antidrive;
 }
 
 int shifter(int ref, int x) { //negative x for other motor
