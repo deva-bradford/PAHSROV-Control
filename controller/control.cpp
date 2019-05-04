@@ -30,15 +30,21 @@ struct dual {
 
 int calcTick(float impulseMs, int hertz) {
 	float cycleMs = 1000.0f / hertz;
-	return (int)(MAX_PWM * impulseMs / cycleMs + 4.0f);
+	return (int)(MAX_PWM * impulseMs / cycleMs + 0.5f);
 }
 
 int xresolver(int trigstate, int joystate) {
-	int state;
-	if (trigstate) {
-		state = 0;
+	int antijoystate;
+	if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //full forward
+		antijoystate = joystate = trigstate;
 	}
-	
+	else if (((1000 < joystate) || (joystate < -1000))) { //leaning
+		antijoystate = 0.75 * joystate;
+	}
+	else { //doubleRot
+		antijoystate = (0 - joystate)
+	}
+	return antijoystate, joystate;
 }
 
 int trigsolver(int ltrig, int rtrig) {
@@ -48,14 +54,6 @@ int trigsolver(int ltrig, int rtrig) {
 
 double cubic (double n) {
 	return (n*n*n);
-}
-
-int doubleRot (int drive, int trig = 0) {
-	antidrive = (0 - drive)
-	if (trig) {
-		antidrive = 0.75 * drive;
-	}
-	return antidrive;
 }
 
 int shifter(int ref, int x) { //negative x for other motor
@@ -73,7 +71,8 @@ int converter(int spec) {
 
 int main(int argc, char const *argv[])
 {
-    mapped coords;
+	mapped coords;
+	dual resolver;
 
 	wiringPiSetup();
 
@@ -101,8 +100,9 @@ int main(int argc, char const *argv[])
 		coords = silmu(joy);
 		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX));
 		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX)));
-		pwmWrite(PIN_BASE + 2 , converter(coords.RJX);
-		pwmWrite(PIN_BASE + 3 , converter(doubleRot(coords.RJX, ));
+		resolver = xresolver(trigsolver(coords.LT, coords.RT), coords.RJX);
+		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM);
+		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM);
     }
 
     return 0;
