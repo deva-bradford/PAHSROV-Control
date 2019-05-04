@@ -34,7 +34,7 @@ int calcTick(float impulseMs, int hertz) {
 	return (int)(MAX_PWM * impulseMs / cycleMs + 0.5f);
 }
 
-int xresolver(int trigstate, int joystate) {
+dual xresolver(int trigstate, int joystate) {
 	int antijoystate;
 	dual pack;
 	if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //full forward
@@ -60,11 +60,11 @@ double cubic (double n) {
 }
 
 int shifter(int ref, int x) { //negative x for other motor
-	int n;
+	int n = 0;
 	if (ref > 0)
 		n = abs(x);
 	if (ref < 0)
-		n = 0 - abs(x);
+		n = (0 - abs(x));
 	return n;
 }
 
