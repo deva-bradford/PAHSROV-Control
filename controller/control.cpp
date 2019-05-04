@@ -46,7 +46,7 @@ int xresolver(int trigstate, int joystate) {
 	else { //doubleRot
 		antijoystate = (0 - joystate);
 	}
-	pack = {antijoystate, joystate}
+	pack = {antijoystate, joystate};
 	return pack;
 }
 
