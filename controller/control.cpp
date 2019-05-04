@@ -23,14 +23,27 @@ char *filename = (char*)"/dev/i2c-1";
 
 //g++ -o control joy.cpp updates.cpp test.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
 
-typedef dual = {
-	int LM;
-	int RM;
+struct dual {
+	int LFM;
+	int RFM;
 };
 
 int calcTick(float impulseMs, int hertz) {
 	float cycleMs = 1000.0f / hertz;
 	return (int)(MAX_PWM * impulseMs / cycleMs + 4.0f);
+}
+
+int xresolver(int trigstate, int joystate) {
+	int state;
+	if (trigstate) {
+		state = 0;
+	}
+	
+}
+
+int trigsolver(int ltrig, int rtrig) {
+	int solvedtrig = rtrig - ltrig;
+	return solvedtrig;
 }
 
 double cubic (double n) {
@@ -88,6 +101,8 @@ int main(int argc, char const *argv[])
 		coords = silmu(joy);
 		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX));
 		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX)));
+		pwmWrite(PIN_BASE + 2 , converter(coords.RJX);
+		pwmWrite(PIN_BASE + 3 , converter(doubleRot(coords.RJX, ));
     }
 
     return 0;
