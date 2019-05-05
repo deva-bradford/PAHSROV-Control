@@ -44,7 +44,7 @@ dual xresolver(int trigstate, int joystate) { //add function to neutralize the m
 		if (joystate<0) {
 antijoystate = 0.75 * joystate;}
 else {antijoystate = trigstate;
-joystate = 0.75 * trigstate;
+joystate = 0.75 * trigstate;}
 	}
 	else { //doubleRot
 		antijoystate = (0 - joystate);
