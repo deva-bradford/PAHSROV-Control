@@ -34,7 +34,7 @@ int calcTick(float impulseMs, int hertz) {
 	return (int)(MAX_PWM * impulseMs / cycleMs + 0.5f);
 }
 
-dual xresolver(int trigstate, int joystate) {
+dual xresolver(int trigstate, int joystate) { //add function to neutralize the motor before FWB-BWD switching
 	int antijoystate;
 	dual pack;
 	if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //full forward
@@ -48,11 +48,6 @@ dual xresolver(int trigstate, int joystate) {
 	}
 	pack = {antijoystate, joystate};
 	return pack;
-}
-
-int trigsolver(int ltrig, int rtrig) {
-	int solvedtrig = rtrig - ltrig;
-	return solvedtrig;
 }
 
 double cubic (double n) {
@@ -101,9 +96,9 @@ int main(int argc, char const *argv[])
         joy->Update();
 
 		coords = silmu(joy);
-		pwmWrite(PIN_BASE , converter(shifter(coords.LJY, coords.LJX)));
+		pwmWrite(PIN_BASE, converter(shifter(coords.LJY, coords.LJX)));
 		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX))));
-		resolver = xresolver(trigsolver(coords.LT, coords.RT), coords.RJX);
+		resolver = xresolver((coords.LT - coords.RT), coords.RJX);
 		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM));
 		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM));
     }
