@@ -19,7 +19,7 @@ using namespace std;
 #define MAX_PWM 4096
 #define HERTZ 50
 
-int file_12c, fd;
+int file_12c, fd, AJ, J;
 char *filename = (char*)"/dev/i2c-1";
 
 //g++ -o control joy.cpp updates.cpp test.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
@@ -42,14 +42,23 @@ dual xresolver(int trigstate, int joystate) { //add function to neutralize the m
 	}
 	else if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //leaning
 		if (joystate<0) {
-antijoystate = 0.75 * joystate;}
-else {antijoystate = trigstate;
-joystate = 0.75 * trigstate;}
+			antijoystate = 0.75 * joystate;
+		}
+		else {
+			antijoystate = trigstate;
+			joystate = 0.75 * trigstate;
+		}
 	}
 	else { //doubleRot
 		antijoystate = (0 - joystate);
 	}
-	pack = {antijoystate, joystate};
+	if ((pack.LFM > 0) && (antijoystate > 0))
+	{
+		pack = {antijoystate, joystate};
+	}
+	else {
+		pack = {311, 311}
+	}
 	return pack;
 }
 
