@@ -37,11 +37,14 @@ int calcTick(float impulseMs, int hertz) {
 dual xresolver(int trigstate, int joystate) { //add function to neutralize the motor before FWB-BWD switching
 	int antijoystate;
 	dual pack;
-	if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //full forward
+	if (trigstate && ((1000 > joystate) || (joystate > -1000))) { //full forward
 		antijoystate = joystate = trigstate;
 	}
-	else if (((1000 < joystate) || (joystate < -1000))) { //leaning
-		antijoystate = 0.75 * joystate;
+	else if (trigstate && ((1000 < joystate) || (joystate < -1000))) { //leaning
+		if (joystate<0) {
+antijoystate = 0.75 * joystate;}
+else {antijoystate = trigstate;
+joystate = 0.75 * trigstate;
 	}
 	else { //doubleRot
 		antijoystate = (0 - joystate);
