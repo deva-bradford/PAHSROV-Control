@@ -31,9 +31,13 @@ struct dual {
 
 dual pack;
 
-int calcTick(float impulseMs, int hertz) {
+int calcTick(float impulseMs, int hertz, string mode) {
+	float offset = 0.5f;
+	if (mode == "MOTOR") {
+		offset = 4.0f;
+	}
 	float cycleMs = 1000.0f / hertz;
-	return (int)(MAX_PWM * impulseMs / cycleMs + 0.5f);
+	return (int)(MAX_PWM * impulseMs / cycleMs + offset);
 }
 
 dual xresolver(int trigstate, int joystate) { //add function to neutralize the motor before FWB-BWD switching
@@ -59,7 +63,7 @@ dual xresolver(int trigstate, int joystate) { //add function to neutralize the m
 		pack = {antijoystate, joystate};
 	}
 	else {
-		pack = {311, 311}
+		pack = {0, 0}
 	}
 	return pack;
 }
