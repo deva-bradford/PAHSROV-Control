@@ -29,6 +29,8 @@ struct dual {
 	int RFM;
 };
 
+dual pack;
+
 int calcTick(float impulseMs, int hertz) {
 	float cycleMs = 1000.0f / hertz;
 	return (int)(MAX_PWM * impulseMs / cycleMs + 0.5f);
@@ -36,7 +38,7 @@ int calcTick(float impulseMs, int hertz) {
 
 dual xresolver(int trigstate, int joystate) { //add function to neutralize the motor before FWB-BWD switching
 	int antijoystate;
-	dual pack;
+
 	if (trigstate && ((1000 > joystate) || (joystate > -1000))) { //full forward
 		antijoystate = joystate = trigstate;
 	}
