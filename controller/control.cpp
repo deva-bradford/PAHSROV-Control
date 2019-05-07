@@ -72,7 +72,7 @@ double cubic (double n) {
 	return (n*n*n);
 }
 
-int Rshifter(int ref, int x, int motorloc) { //negative x for other motor
+int Rshifter(int ref, int x) { //negative x for other motor
 	int n = ref;
 	if ((ref > 0) && (x < 0)) {
 		if (x * -1 > ref) {
