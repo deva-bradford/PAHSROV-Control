@@ -63,7 +63,7 @@ dual xresolver(int trigstate, int joystate) { //add function to neutralize the m
 		pack = {antijoystate, joystate};
 	}
 	else {
-		pack = {0, 0}
+		pack = {0, 0};
 	}
 	return pack;
 }
@@ -72,17 +72,52 @@ double cubic (double n) {
 	return (n*n*n);
 }
 
-int shifter(int ref, int x) { //negative x for other motor
-	int n = 0;
-	if (ref > 0)
-		n = abs(x);
-	if (ref < 0)
-		n = (0 - abs(x));
+int Rshifter(int ref, int x, int motorloc) { //negative x for other motor
+	int n = ref;
+	if ((ref > 0) && (x < 0)) {
+		if (x * -1 > ref) {
+			n = (x * -1);
+		}
+		else{
+			n = ref;
+		}
+	}
+	else if ((ref < 0) && (x > 0)) {
+		if ((x * -1) < ref) {
+			n = (x * -1);
+		}
+		else{
+			n = ref;
+		}
+		
+	}
+	return n;
+}
+
+int Lshifter(int ref, int x) { //negative x for other motor
+	int n = ref;
+	if ((ref > 0) && (x > 0)) {
+		if (x > ref) {
+			n = x;
+		}
+		else{
+			n = ref;
+		}
+	}
+	else if ((ref < 0) && (x < 0)) {
+		if (x < ref) {
+			n = x ;
+		}
+		else{
+			n = ref;
+		}
+		
+	}
 	return n;
 }
 
 int converter(int spec) {
-	return (cubic((spec / 32767)) * 102) + 311;
+	return ((cubic((spec / 32767))) * 102 + 311);
 }
 
 int main(int argc, char const *argv[])
@@ -114,8 +149,8 @@ int main(int argc, char const *argv[])
         joy->Update();
 
 		coords = silmu(joy);
-		pwmWrite(PIN_BASE, converter(shifter(coords.LJY, coords.LJX)));
-		pwmWrite(PIN_BASE + 1 , converter(shifter(coords.LJY, (0 - coords.LJX))));
+		pwmWrite(PIN_BASE, converter(Rshifter(coords.LJY, coords.LJX)));
+		pwmWrite(PIN_BASE + 1 , converter(Lshifter(coords.LJY, (0 - coords.LJX))));
 		resolver = xresolver((coords.LT - coords.RT), coords.RJX);
 		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM));
 		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM));
