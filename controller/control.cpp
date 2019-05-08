@@ -154,6 +154,11 @@ int main(int argc, char const *argv[])
 		resolver = xresolver((coords.LT - coords.RT), coords.RJX);
 		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM));
 		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM));
+	    cout<<"ULM: " << converter(Rshifter(coords.LJY, coords.LJX))<<endl;
+	    cout<<"URM: " << converter(Lshifter(coords.LJY, (0 - coords.LJX)))<<endl;
+	    cout<<"LLM: " << converter(resolver.LFM)<<endl;
+	    cout<<"LRM: " << converter(resolver.RFM)<<endl;
+	    system("@cls||clear");
     }
 
     return 0;
