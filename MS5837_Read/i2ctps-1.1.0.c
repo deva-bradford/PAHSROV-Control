@@ -204,39 +204,39 @@ void Temp_and_pressure_read() {
 
 	Conversion_and_Read(res, &pres);
 
-	printf("Raw Temp: %d\nRaw Pres: %d\n", temp, pres);
+	//printf("Raw Temp: %d\nRaw Pres: %d\n", temp, pres);
 
 
 	D2 = temp;
 	D1 = pres;
 
-	printf("D1: %d\nD2: %d\n", D1,D2);
+	//printf("D1: %d\nD2: %d\n", D1,D2);
 
 	dT=D2-(desired_values[5]*256.0);
 	SENS=desired_values[1]*32768.0+(desired_values[3]*dT)/256.0;
 	OFF=desired_values[2]*65536.0+(desired_values[4]*dT)/128.0;
 	P=(D1*SENS/2097152-OFF)/8192.0;
 	
-	printf("\nDt:%d\nSENS:%f\nOFF:%f\nP:%f\n",dT,SENS,OFF,P);
+	//printf("\nDt:%d\nSENS:%f\nOFF:%f\nP:%f\n",dT,SENS,OFF,P);
 	
 	
 	TEMP = 2000+(dT*desired_values[6])/8388608;
 	if ( (TEMP/100)<20)
 	{
-	  printf("\nFirst if Algo.Temp: %f\n", (TEMP/100));
+	 // printf("\nFirst if Algo.Temp: %f\n", (TEMP/100));
 	  Ti = 3*dT*dT/8589934592.0;
 	  OFFi=(3*(TEMP-2000)*(TEMP-2000))/2;
 	  SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 	  if((TEMP/100)<-15)
 	  {
-		printf("\nSecond if Algo.Temp: %f\n", (TEMP/100));
+		//printf("\nSecond if Algo.Temp: %f\n", (TEMP/100));
 	    OFFi=OFFi+7*(TEMP+1500)*(TEMP+1500);
 	    SENSi=SENSi+(4*(TEMP+1500)*(TEMP+1500));
 	  }
 	}
 	else if((TEMP/100)>=20)
 	{
-	  	printf("\nThird if Algo.Temp: %f\n", (TEMP/100));
+	  	//printf("\nThird if Algo.Temp: %f\n", (TEMP/100));
 
 	  Ti=(2*dT*dT)/137438953472.0;
 	   OFFi = ((TEMP-2000)*(TEMP-2000))/16;
@@ -247,7 +247,7 @@ void Temp_and_pressure_read() {
 	TEMP=TEMP-Ti;
 	P=(((D1*SENS2)/2097152.0-OFF2)/8192.0)/10.0;
 	TEMP = TEMP/100.0;
-    printf("P: %f\n", P);
+   // printf("P: %f\n", P);
 	double depth = (P*100-101300)/(density*9.80665);
 	//double alt = (1-pow(P/1013.25,.190284))*145366.45*.3048;
 	double alt = (1-pow(P/1013.25,.190284))*44307.69396;
@@ -295,4 +295,5 @@ Deprecated Secondary Algorithm
 */
 
 	printf("\nTemp: %f\nPres: %f\nDepth: %f\n Alt: %f\n", TEMP, P, depth, alt);
+	system("@cls||clear");
 }
