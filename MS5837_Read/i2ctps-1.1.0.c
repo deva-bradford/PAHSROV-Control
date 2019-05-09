@@ -253,47 +253,6 @@ void Temp_and_pressure_read() {
 	double alt = (1-pow(P/1013.25,.190284))*44307.69396;
 	P=P/10.0;//convert to kPa
 
-
-/*
-Deprecated Secondary Algorithm
-	dT = (int32_t)temp - ((int32_t)eeprom_coeff[MS5837_REFERENCE_TEMPERATURE_INDEX] << 8);
-
-		// Actual temperature = 2000 + dT * TEMPSENS
-	TEMP = 2000 + ((int64_t)dT * (int64_t)eeprom_coeff[MS5837_TEMP_COEFF_OF_TEMPERATURE_INDEX] >> 23) ;
-
-		// Second order temperature compensation
-	if( TEMP < 2000 )
-	{
-		T2 = ( 3 * ( (int64_t)dT  * (int64_t)dT  ) ) >> 33;
-		OFF2 = 3 * ((int64_t)TEMP - 2000) * ((int64_t)TEMP - 2000) / 2 ;
-		SENS2 = 5 * ((int64_t)TEMP - 2000) * ((int64_t)TEMP - 2000) / 8 ;
-		if( TEMP < -1500 )
-		{
-			OFF2 += 7 * ((int64_t)TEMP + 1500) * ((int64_t)TEMP + 1500) ;
-			SENS2 += 4 * ((int64_t)TEMP + 1500) * ((int64_t)TEMP + 1500) ;
-		}
-	}
-	else
-	{
-		T2 = ( 2 * ( (int64_t)dT  * (int64_t)dT  ) ) >> 37;
-		OFF2 = ((int64_t)TEMP + 1500) * ((int64_t)TEMP + 1500) >> 4;
-		SENS2 = 0 ;
-	}
-		// OFF = OFF_T1 + TCO * dT
-	OFF = ( (int64_t)(eeprom_coeff[MS5837_PRESSURE_OFFSET_INDEX]) << 16 ) + ( ( (int64_t)(eeprom_coeff[MS5837_TEMP_COEFF_OF_PRESSURE_OFFSET_INDEX]) * dT ) >> 7 ) ;
-	OFF -= OFF2 ;
-
-		// Sensitivity at actual temperature = SENS_T1 + TCS * dT
-	SENS = ( (int64_t)eeprom_coeff[MS5837_PRESSURE_SENSITIVITY_INDEX] << 15 ) + ( ((int64_t)eeprom_coeff[MS5837_TEMP_COEFF_OF_PRESSURE_SENSITIVITY_INDEX] * dT) >> 8 ) ;
-	SENS -= SENS2 ;
-
-		// Temperature compensated pressure = D1 * SENS - OFF
-	P = ( ( (pres * SENS) >> 21 ) - OFF ) >> 13 ;
-
-	temperature = ( (float)TEMP - T2 ) / 100;
-	pressure = (float)P / 100;
-*/
-
 	printf("\nTemp: %f\nPres: %f\nDepth: %f\n Alt: %f\n", TEMP, P, depth, alt);
 	system("@cls||clear");
 }
