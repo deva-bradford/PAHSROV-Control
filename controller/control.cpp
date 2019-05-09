@@ -148,18 +148,27 @@ int main(int argc, char const *argv[])
         usleep(1000);
         joy->Update();
 
-		coords = silmu(joy);
-		pwmWrite(PIN_BASE, converter(Rshifter(coords.LJY, coords.LJX)));
-		pwmWrite(PIN_BASE + 1 , converter(Lshifter(coords.LJY, (0 - coords.LJX))));
-		resolver = xresolver((coords.LT - coords.RT), coords.RJX);
-		pwmWrite(PIN_BASE + 2 , converter(resolver.LFM));
-		pwmWrite(PIN_BASE + 3 , converter(resolver.RFM));
-	    	pwmWrite(PIN_BASE + 4, calcTick(((coords.RJY / 32767)*2), HERTZ, "SERVO"))
-	    cout<<"ULM: " << converter(Rshifter(coords.LJY, coords.LJX))<<endl;
-	    cout<<"URM: " << converter(Lshifter(coords.LJY, (0 - coords.LJX)))<<endl;
-	    cout<<"LLM: " << converter(resolver.LFM)<<endl;
-	    cout<<"LRM: " << converter(resolver.RFM)<<endl;
-	    system("@cls||clear");
+	coords = silmu(joy);
+	resolver = xresolver((coords.LT - coords.RT), coords.RJX);
+	
+	int LCU = converter(Rshifter(coords.LJY, coords.LJX));
+	int LCD = converter(Lshifter(coords.LJY, (0 - coords.LJX)));
+	int RCU = converter(resolver.LFM);
+	int RCP = converter(resolver.RFM);
+	int SC  = calcTick(((coords.RJY / 32767)*2), HERTZ, "SERVO");
+	   
+	pwmWrite(PIN_BASE, LCU);
+	pwmWrite(PIN_BASE + 1 , LCD);
+	pwmWrite(PIN_BASE + 2, RCU);
+	pwmWrite(PIN_BASE + 3, RCP);
+	pwmWrite(PIN_BASE + 4, SC)
+		
+	cout<<"ULM: " << LCU;
+	cout<<"URM: " << LCD;
+	cout<<"LLM: " << RCU;
+	cout<<"LRM: " << RCP;
+	cout<<"SA:  " << SC;
+	system("@cls||clear");
     }
 
     return 0;
