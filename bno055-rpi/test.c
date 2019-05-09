@@ -16,6 +16,7 @@ int main(){
                 double dat[3];
                 bno.readEuler(dat);
                 printf("x: %f y: %f z: %f\n",dat[0],dat[1],dat[2]);
+                system("@cls||clear");
                 delay(100);
         }
         return 0;
