@@ -142,6 +142,9 @@ int main(int argc, char const *argv[])
 
     Joystick* joy = new Joystick(argv[1]);
 	printf("Initializing...");
+	
+	float SC  = 1.5f;
+	
     while (true)
     {
         usleep(1000);
@@ -154,8 +157,10 @@ int main(int argc, char const *argv[])
 		int RCU = converter(-Lshifter(coords.LJY, coords.LJX));
 		int LCD = converter(resolver.LFM);
 		int RCD = converter(resolver.RFM);
-		float SC  = float(coords.RJY / 32767.0f * 0.5f + 1.5f);
-	   
+	   	
+	    	if (coords.BRB)
+			SC = float(coords.RJY / 32767.0f * 0.5f + 1.5f);
+	    
 		pwmWrite(PIN_BASE + 6, LCU);
 		pwmWrite(PIN_BASE + 5, LCD);
 		pwmWrite(PIN_BASE + 1, RCU);
@@ -167,7 +172,9 @@ int main(int argc, char const *argv[])
 		cout<<"Left:        " << LCD <<endl;
 		cout<<"Right:       " << RCD <<endl;
 		cout<<"Camera:      " << SC <<endl;
-		//	system("clear");
+		
+	    	printf("\033[2J");
+		printf("\033[%d;%dH", 0, 0);
     }
 
     return 0;
