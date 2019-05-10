@@ -22,7 +22,7 @@ using namespace std;
 int file_12c, fd, AJ, J;
 char *filename = (char*)"/dev/i2c-1";
 
-//g++ -o control joy.cpp updates.cpp control.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
+//g++ -o control joy.cpp updates.cpp controldev.cpp -g -O3 -Wall -Wextra -Wpedantic -std=c++11 -lwiringPi -lwiringPiPca9685
 
 struct dual {
 	int LFM;
