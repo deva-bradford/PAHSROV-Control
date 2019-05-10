@@ -254,5 +254,7 @@ void Temp_and_pressure_read() {
 	P=P/10.0;//convert to kPa
 
 	printf("\nTemp: %f\nPres: %f\nDepth: %f\n Alt: %f\n", TEMP, P, depth, alt);
-	system("@cls||clear");
+	
+	printf("\033[2J");
+	printf("\033[%d;%dH", 0, 0);
 }
