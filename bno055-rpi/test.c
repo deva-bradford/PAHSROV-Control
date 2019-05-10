@@ -15,8 +15,11 @@ int main(){
         while(1){
                 double dat[3];
                 bno.readEuler(dat);
-                printf("x: %f y: %f z: %f\n",dat[0],dat[1],dat[2]);
-                system("@cls||clear");
+                printf("x: %f \ny: %f \nz: %f\n",dat[0],dat[1],dat[2]);
+
+                printf("\033[2J");
+		printf("\033[%d;%dH", 0, 0);
+                
                 delay(100);
         }
         return 0;
