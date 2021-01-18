@@ -5,7 +5,7 @@
 
 BNO055 bno = BNO055();
 
-//compile with g++ -o senstool test.c bno055.cpp -lwiringPi
+//compile with g++ -o senstool ReadBNO.c bno055.cpp -lwiringPi
 
 int main(){
         if(!bno.begin()){
